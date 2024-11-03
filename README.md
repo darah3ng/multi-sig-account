@@ -1,66 +1,77 @@
-## Foundry
+# MultiSignAccount
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+> ✋ Warning: This project is for educational purposes only. Use at your own risk.
 
+A multi-signature account abstraction smart contract that enables secure group-controlled transactions on Ethereum.
+
+## Project Overview
+### Purpose
+Provides a secure way to manage shared funds requiring multiple confirmations before executing transactions.
+
+### Key Features 
+- Multiple owner management
+- Configurable confirmation threshold
+- Transaction submission and execution
+- Owner-based access control
+- Ether deposit handling
+- Transaction confirmation tracking
+- Withdrawal functionality
+
+### Architecture
+The contract implements:
+- Transaction struct for tracking details and confirmation status
+- Owner management with required confirmation thresholds
+- Event emission for all major actions
+- Modifier-based access control
+
+## Development
+
+### Prerequisites
+- Foundry toolchain
+
+### Foundry Setup
 Foundry consists of:
+- **Forge**: Ethereum testing framework
+- **Cast**: CLI for contract interaction
+- **Anvil**: Local Ethereum node
+- **Chisel**: Solidity REPL
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
+### Build & Test
 ```shell
-$ forge build
+# Build
+forge build
+
+# Test
+forge test
+
+# Format
+forge fmt
+
+# Gas Snapshots
+forge snapshot
 ```
 
-### Test
+### Deploy & Interact
 
-```shell
-$ forge test
-```
+```bash
+# Start local node
+anvil
 
-### Format
+# Import existing wallet
+cast wallet import <ACCOUNT_NAME> --interactive
 
-```shell
-$ forge fmt
-```
+# Deploy MultiSigAccount with owners and required confirmations
+OWNERS='["<ADDRESS1>", "<ADDRESS2>"]' REQUIRED=2 forge script script/MultiSigAccount.s.sol --broadcast --rpc-url http://127.0.0.1:8545 --sender <WALLET_ADDRESS> --account <ACCOUNT_NAME>
 
-### Gas Snapshots
+# Submit transaction
+cast send --private-key <PRIVATE_KEY> <CONTRACT_ADDRESS> "submitTransaction(address,uint256,bytes)" <TO_ADDRESS> <VALUE> <DATA> --rpc-url http://127.0.0.1:8545
 
-```shell
-$ forge snapshot
-```
+# Confirm transaction
+cast send --private-key <PRIVATE_KEY> <CONTRACT_ADDRESS> "confirmTransaction(uint256)" <TX_INDEX> --rpc-url http://127.0.0.1:8545
 
-### Anvil
+# Execute transaction
+cast send --private-key <PRIVATE_KEY> <CONTRACT_ADDRESS> "executeTransaction(uint256)" <TX_INDEX> --rpc-url http://127.0.0.1:8545
 
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+# Get transaction count
+cast call <CONTRACT_ADDRESS> "getTransactionCount()" --rpc-url http://127.0.0.1:8545
 ```
