@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 /**
-* @title MultiSigAccount
-* @dev A basic multi-signature account abstraction
-*/
+ * @title MultiSigAccount
+ * @dev A basic multi-signature account abstraction
+ */
 contract MultiSigAccount {
     struct Transaction {
         address to;
@@ -21,15 +21,17 @@ contract MultiSigAccount {
     mapping(uint256 => mapping(address => bool)) public isConfirmed;
 
     event Deposit(address indexed sender, uint256 amount);
-    event SubmitTransaction(address indexed owner, uint256 indexed txIndex, address indexed to, uint256 value, bytes data);
+    event SubmitTransaction(
+        address indexed owner, uint256 indexed txIndex, address indexed to, uint256 value, bytes data
+    );
     event ConfirmTransaction(address indexed owner, uint256 indexed txIndex);
     event ExecuteTransaction(address indexed owner, uint256 indexed txIndex);
     event WithdrawToOwner(uint256 amount);
 
     modifier onlyOwner() {
         bool isOwner = false;
-        for(uint256 i = 0; i < owners.length; i++) {
-            if(msg.sender == owners[i]) {
+        for (uint256 i = 0; i < owners.length; i++) {
+            if (msg.sender == owners[i]) {
                 isOwner = true;
                 break;
             }
@@ -59,8 +61,8 @@ contract MultiSigAccount {
     }
 
     function withdrawToOwner(uint256 _ownerIndex) public onlyOwner {
-        uint amount = address(this).balance;
-        (bool success, ) = owners[_ownerIndex].call{ value: amount }("");
+        uint256 amount = address(this).balance;
+        (bool success,) = owners[_ownerIndex].call{value: amount}("");
 
         emit WithdrawToOwner(amount);
 
@@ -70,13 +72,7 @@ contract MultiSigAccount {
     function submitTransaction(address _to, uint256 _value, bytes memory _data) public onlyOwner {
         uint256 txIndex = transactions.length;
 
-        transactions.push(Transaction({
-            to: _to,
-            value: _value,
-            data: _data,
-            executed: false,
-            confirmations: 0
-        }));
+        transactions.push(Transaction({to: _to, value: _value, data: _data, executed: false, confirmations: 0}));
 
         emit SubmitTransaction(msg.sender, txIndex, _to, _value, _data);
     }
@@ -97,7 +93,7 @@ contract MultiSigAccount {
         require(transaction.confirmations >= required, "Not enough confirmations");
         require(!transaction.executed, "Transaction already executed");
 
-        (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+        (bool success,) = transaction.to.call{value: transaction.value}(transaction.data);
         require(success, "Transaction failed");
 
         Transaction storage txn = transactions[_txIndex];
