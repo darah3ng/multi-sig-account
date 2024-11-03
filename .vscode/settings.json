@@ -1,0 +1,4 @@
+{
+  // Fix the issue with the import paths
+  "solidity.monoRepoSupport": false
+}
